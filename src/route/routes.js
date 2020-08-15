@@ -7,7 +7,7 @@ import Description from '../components/description'
 function Routes() {
   return (
 
-    <div class="mx-auto w-75 mt-4">
+    <div className="mx-auto w-75 mt-4">
     <Switch>
       <Route
         path='/sendNotify'

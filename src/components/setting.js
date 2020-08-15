@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Form, Button, Col } from "react-bootstrap";
+// import * as file from 'file-system';
 
+// const promisify = require('util').promisify;
+const fs = global.file;
+// const writeFilePromise = promisify(fs.writeFile);
 
 
 function Setting() {
@@ -8,33 +12,38 @@ function Setting() {
   const [serviceName, setServiceName] = useState("");
   const [status, setStatus] = useState(false);
 
-  const test = (event) => {
+  const clickCheckbox = (event) => {
     const checkStatus = status ? false : true
     setStatus(checkStatus)
 
     console.log(checkStatus)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
 
     if (!status) {
       alert("請確認輸入資料正確並打勾");
       return;
     }
-    console.log('sss')
-
-    const form = event.currentTarget;
     
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+    if (token && serviceName){
+      const data = JSON.stringify({
+        serviceName: serviceName, 
+        token: token
+      })
+
+      const path = './data/data.json';
+      fs.writeFile(path, data, (err) => {
+        if (err) throw err;
+        alert('Data written to file');
+    });
     }
 
   };
 
 
   return (
-      <Form noValidate onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formBasicEmail">
 
           <Form.Row>
@@ -42,6 +51,7 @@ function Setting() {
 
             <Col>
               <Form.Control 
+              required
               type="text" 
               placeholder="Enter Name" 
               onChange={(event) => {
@@ -58,6 +68,7 @@ function Setting() {
 
             <Col>
               <Form.Control 
+              required
               type="password" 
               placeholder="Enter Token" 
               onChange={(event) => {
@@ -74,7 +85,7 @@ function Setting() {
           type="checkbox" 
           label="Check me out" 
           onChange={(event) => {
-            test(event);
+            clickCheckbox(event);
             // setStatus(event.target.value);
           }}/>
         </Form.Group>

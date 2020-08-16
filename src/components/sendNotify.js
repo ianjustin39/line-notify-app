@@ -1,30 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Col } from "react-bootstrap";
 
-
+const fs = global.file;
 
 function SendNotify() {
   const [token, setToken] = useState("");
-  const [serviceName, setServiceName] = useState("");
-  const [status, setStatus] = useState(false);
+  const [notify, setNotify] = useState("");
+  const [services, setServices] = useState(<option>請點擊取得服務</option>);
 
   const handleSubmit = async (event) => {
 
-    if (!status) {
-      alert("請確認輸入資料正確並打勾");
-      return;
-    }
-
+    alert(token + " " + notify)
 
   };
+  useEffect(() => {
+    getServiceList();
+  });
 
-  const getServiceList = () => {
-    const array = []
+ const getServiceList = () => {
+    const array = [];
+    let dataArr = [];
+    fs.readFile("./data/data.json", (err, data) => {
+      if (err) alert(err);
 
-    for (var i = 1; i <= 10; i++) {
-      array.push(<option>{i}</option>)
-    }
-    return array
+      if (data.length > 0) {
+        dataArr = JSON.parse(data);
+      }
+
+      for (var i = 1; i <= dataArr.length; i++) {
+        array.push(<option>{dataArr[i]}</option>)
+      }
+      
+      setServices(dataArr.map(data => <option value={data.token}>{data.serviceName}</option>))
+      return array
+    });
   };
 
   return (
@@ -38,11 +47,10 @@ function SendNotify() {
             <Form.Control
               required
               as="select"
-              placeholder="Enter Name"
               onChange={(event) => {
-                setServiceName(event.target.value);
+                setToken(event.target.value);
               }}>
-              {getServiceList()}
+              {services}
             </Form.Control>
           </Col>
         </Form.Row>
@@ -59,7 +67,7 @@ function SendNotify() {
               placeholder="Enter Message"
               rows="8"
               onChange={(event) => {
-                setToken(event.target.value);
+                setNotify(event.target.value);
               }} />
 
           </Col>
